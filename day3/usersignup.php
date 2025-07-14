@@ -1,21 +1,47 @@
 <?php
 session_start();
 require '../connect.php';
+$errors = [];
 if (isset($_POST['submit'])) {
-    $username = $_POST['username'];
-    $password = password_hash($_POST['password'],PASSWORD_DEFAULT);
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
+    $email = trim($_POST['email']);
 
-// if (password_verify($entered_password, $hashed_password_from_db)) {
-// }
-    $email = $_POST['email'];
-    $sql = "INSERT INTO user (username, password, email) VALUES ('$username', '$password','$email')";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $_SESSION['success'] = "Signup successfully";
-        header('Location:./emailform.php');
-        exit();
-       
+    //validation
+    if (empty($username)) {
+        $errors[] = 'username is required';
     }
+    if (empty($password)) {
+        $errors[] = 'password is required';
+    } else if (strlen($password) < 6) {
+        $errors[] = 'password must be at least 6 characters long';
+    }
+    if (empty($email)) {
+        $errors[] = 'email is required';
+    } else if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
+        $errors[] = 'invalid email';
+    }
+    if (empty($errors)) {
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO `user`(`username`, `password`, `email`) VALUES ('$username', '$password','$email')";
+
+        $result = mysqli_query($conn, $sql);
+        if ($result) {
+            $_SESSION['success'] = "Signup successfully";
+            header('Location:./emailform.php');
+            exit();
+
+        } else {
+            echo "Insert Error: ";
+        }
+
+    }
+    else if(!empty($errors)) {
+        foreach($errors as $err){
+            echo $err . "<br>";
+        }
+    }
+
 }
 
 ?>
@@ -25,7 +51,7 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>SignupT</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 

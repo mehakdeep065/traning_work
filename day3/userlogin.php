@@ -5,32 +5,50 @@ if (isset($_POST['submit'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    
-    $sql = "SELECT * FROM `user` WHERE `email`='$email' LIMIT 1";
-    $result = mysqli_query($conn, $sql);
+    //validation
+    $errors = [];
+    if (empty($email)) {
+        $errors[] = 'email is required';
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'invalid email';
+    }
+    if (empty($password)) {
+        $errors[] = 'password is required';
+    } else if (strlen($password) < 6) {
+        $errors[] = 'password must be at least 6 characters long';
+    }
 
-    if ($result && mysqli_num_rows($result) == 1) {
-        $row = mysqli_fetch_assoc($result);
-        
-        // Check password (assuming it's hashed in DB)
-        if (password_verify($password, $row['password'])) {
-            echo '<div class="p-4 bg-green-100 text-green-800 mb-4 rounded">Login successful!</div>';
+    if (!$errors) {
+        $sql = "SELECT * FROM `user` WHERE `email`='$email' LIMIT 1";
+        $result = mysqli_query($conn, $sql);
+
+        if ($result && mysqli_num_rows($result) == 1) {
+            $row = mysqli_fetch_assoc($result);
+
+            // Check password (assuming it's hashed in DB)
+            // if (password_verify($entered_password, $hashed_password_from_db)) {
+// }
+            if (password_verify($password, $row['password'])) {
+                echo '<div class="p-4 bg-green-100 text-green-800 mb-4 rounded">Login successful!</div>';
+            } else {
+                echo '<div class="p-4 bg-red-100 text-red-800 mb-4 rounded">Invalid password.</div>';
+            }
         } else {
-            echo '<div class="p-4 bg-red-100 text-red-800 mb-4 rounded">Invalid password.</div>';
+            echo '<div class="p-4 bg-red-100 text-red-800 mb-4 rounded">User not found.</div>';
         }
-    } else {
-        echo '<div class="p-4 bg-red-100 text-red-800 mb-4 rounded">User not found.</div>';
     }
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
+
 <body>
     <div class="flex h-screen bg-[#DEDFE1] justify-center items-center">
         <form class="flex flex-col bg-white p-8 rounded" method="post">
@@ -42,4 +60,5 @@ if (isset($_POST['submit'])) {
         </form>
     </div>
 </body>
+
 </html>

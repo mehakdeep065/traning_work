@@ -1,21 +1,32 @@
 <?php
 include '../connect.php';
 session_start();
-if(isset($_SESSION['success'])){
-     echo '<div class="justify-center flex">'.$_SESSION['success'].'</div>';
-     unset($_SESSION['success']);
+if (isset($_SESSION['success'])) {
+    echo '<div class="justify-center flex">' . $_SESSION['success'] . '</div>';
+    unset($_SESSION['success']);
 }
 
-if(isset($_POST['submit'])){
+if (isset($_POST['submit'])) {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $sql = "INSERT INTO `subscriber`( `name`, `email`) VALUES ('$name','$email')";
-    $result = mysqli_query($conn,$sql);
-    if($result){
-        echo "data inserted ";
+    $errors = [];
+    if (empty($username)) {
+        $errors[] = 'username is required';
     }
-    else{
-     echo "data not insertd";
+    if (empty($email)) {
+        $errors[] = 'email is required';
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'invalid email';
+    }
+
+    if (!$errors) {
+        $sql = "INSERT INTO `subscriber`( `name`, `email`) VALUES ('$name','$email')";
+        $result = mysqli_query($conn, $sql);
+        if ($result) {
+            echo "data inserted ";
+        } else {
+            echo "data not insertd";
+        }
     }
 }
 
@@ -23,11 +34,13 @@ if(isset($_POST['submit'])){
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <div>
         <form method="post">
@@ -39,4 +52,5 @@ if(isset($_POST['submit'])){
         </form>
     </div>
 </body>
+
 </html>
