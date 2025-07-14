@@ -2,7 +2,7 @@
 $host = "localhost";
 $username = "root";
 $password = "";
-$database = "time_schedule";
+$database = "training";
 $conn = mysqli_connect($host,$username,$password,$database);
 
 if(!$conn){
