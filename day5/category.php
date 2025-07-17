@@ -7,6 +7,8 @@ if(isset($_POST['submit'])){
     
     $cheak = mysqli_query($conn, "SELECT * FROM categories WHERE name = '$cat'");
     if (mysqli_num_rows($cheak) > 0) {
+        $_SESSION['cate'] = $cat;
+        header('location:display.php');
         echo "$cat " . "Category already exist" . "<br>";
        
     } else {

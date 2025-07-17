@@ -21,7 +21,7 @@ if (isset($_POST['submit'])) {
     //cheak
     $cheak = mysqli_query($conn, "SELECT * FROM rss_urls WHERE category_id = '$category_id'");
     if (mysqli_num_rows($cheak) > 0) {
-        $_SESSION['exist'] = "$category_name " . "category and Url already exist" . "<br>";
+        $_SESSION['exist'] = "$category_name "  . "<br>";
         header('location:display.php');
 
     } else {
